@@ -11,6 +11,7 @@ public class BDD {
         this.orderOfNodes = order;
         bright = new BDDNode(1);
         bfalse = new BDDNode(0);
+        root = new BDDNode(orderOfNodes.charAt(0));
         root = addRecursive(root, entry, orderOfNodes);
     }
 
@@ -34,9 +35,6 @@ public class BDD {
 //        root = addRecursive(root, currentConfig, orderOfNodes);
 //    }
     private BDDNode addRecursive(BDDNode root, String currentConfig, String orderOfNodes) {
-        if(root == null) {
-            root = new BDDNode(orderOfNodes.charAt(0));
-        }
         if(currentConfig.equals(".")) {
             root = bright;
             return root;
@@ -46,10 +44,8 @@ public class BDD {
             return root;
         }
         if(orderOfNodes.length() > 1) {
-            root.setLeft(new BDDNode(orderOfNodes.charAt(1)));
-            root.setRight(new BDDNode(orderOfNodes.charAt(1)));
-            addRecursive(root.getLeft(), division(currentConfig, orderOfNodes.charAt(0), false), orderOfNodes.substring(1));
-            addRecursive(root.getRight(), division(currentConfig, orderOfNodes.charAt(0), true), orderOfNodes.substring(1));
+            root.setLeft(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), false), orderOfNodes.substring(1)));
+            root.setRight(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), true), orderOfNodes.substring(1)));
         }
         else {
             root.setLeft(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), false), ""));
@@ -103,11 +99,11 @@ public class BDD {
                         result += " + " + helper[i];
                         continue;
                     }
+                    if(helper[i].length() == 2) {
+                        result = ".";
+                        break;
+                    }
                     if(result.equals("")) {
-                        if(helper.length == 1 && helper[i].length() == 2) {
-                            result = ".";
-                            break;
-                        }
                         result = helper[i].substring(2);
                         continue;
                     }
@@ -115,11 +111,11 @@ public class BDD {
                 }
                 else {
                     if(helper[i].charAt(0) != achar) {
+                        if(helper[i].length() == 2) {
+                            result = ".";
+                            break;
+                        }
                         if(result.equals("")) {
-                            if(helper.length == 1 && helper[i].length() == 1) {
-                                result = ".";
-                                break;
-                            }
                             result = helper[i].substring(1);
                             continue;
                         }
@@ -135,11 +131,11 @@ public class BDD {
                     result += " + " + helper[i];
                     continue;
                 }
+                if(helper[i].length() == 1) {
+                    result = ".";
+                    break;
+                }
                 if(result.equals("")) {
-                    if(helper.length == 1 && helper[i].length() == 1) {
-                        result = ".";
-                        break;
-                    }
                     result = helper[i].substring(1);
                     continue;
                 }
@@ -148,11 +144,11 @@ public class BDD {
             }
             else {
                 if(helper[i].charAt(1) != achar) {
+                    if(helper[i].length() == 1) {
+                        result = ".";
+                        break;
+                    }
                     if(result.equals("")) {
-                        if(helper.length == 1 && helper[i].length() == 1) {
-                            result = ".";
-                            break;
-                        }
                         result = helper[i].substring(1);
                         continue;
                     }
