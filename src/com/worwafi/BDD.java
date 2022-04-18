@@ -1,14 +1,21 @@
 package com.worwafi;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+
 public class BDD {
     private BDDNode root;
-    private String entry;
-    private String orderOfNodes;
+    private final String entry;
+    private final String orderOfNodes;
     private final BDDNode bright;
     private final BDDNode bfalse;
+    private ArrayList<HashMap<String, BDDNode>> nodeHashMap;
     public BDD(String entry, String order) {
         this.entry = entry;
         this.orderOfNodes = order;
+        nodeHashMap = new ArrayList<>(orderOfNodes.length()+1);
+        for(int i = 0; i < orderOfNodes.length()+1; i++)
+            nodeHashMap.add(i, new HashMap<>());
         bright = new BDDNode(1);
         bfalse = new BDDNode(0);
         root = new BDDNode(orderOfNodes.charAt(0));
@@ -35,6 +42,9 @@ public class BDD {
 //        root = addRecursive(root, currentConfig, orderOfNodes);
 //    }
     private BDDNode addRecursive(BDDNode root, String currentConfig, String orderOfNodes) {
+        if(nodeHashMap.get(orderOfNodes.length()).put(currentConfig, root) != null) {
+            System.out.println("problem on " + currentConfig.length() + " level with " + orderOfNodes);
+        }
         if(currentConfig.equals(".")) {
             root = bright;
             return root;
@@ -96,25 +106,27 @@ public class BDD {
             for(int i = 0; i < helper.length; i++) {
                 if(helper[i].charAt(0) == '!') {
                     if(helper[i].charAt(1) != achar) {
+                        if(result.equals("")) {
+                            result = helper[i];
+                            continue;
+                        }
                         result += " + " + helper[i];
                         continue;
                     }
-                    if(helper[i].length() == 2) {
-                        result = ".";
-                        break;
-                    }
-                    if(result.equals("")) {
-                        result = helper[i].substring(2);
-                        continue;
-                    }
-                    result += " + " + helper[i].substring(2);
-                }
-                else {
-                    if(helper[i].charAt(0) != achar) {
+                    else {
                         if(helper[i].length() == 2) {
                             result = ".";
                             break;
                         }
+                        if(result.equals("")) {
+                            result = helper[i].substring(2);
+                            continue;
+                        }
+                        result += " + " + helper[i].substring(2);
+                    }
+                }
+                else {
+                    if(helper[i].charAt(0) != achar) {
                         if(result.equals("")) {
                             result = helper[i].substring(1);
                             continue;
@@ -128,26 +140,27 @@ public class BDD {
         for(int i = 0; i < helper.length; i++) {
             if(helper[i].charAt(0) != '!') {
                 if(helper[i].charAt(0) != achar) {
+                    if(result.equals("")) {
+                        result = helper[i];
+                        continue;
+                    }
                     result += " + " + helper[i];
                     continue;
                 }
-                if(helper[i].length() == 1) {
-                    result = ".";
-                    break;
-                }
-                if(result.equals("")) {
-                    result = helper[i].substring(1);
-                    continue;
-                }
-
-                result += " + " + helper[i].substring(1);
-            }
-            else {
-                if(helper[i].charAt(1) != achar) {
+                else {
                     if(helper[i].length() == 1) {
                         result = ".";
                         break;
                     }
+                    if(result.equals("")) {
+                        result = helper[i].substring(1);
+                        continue;
+                    }
+                    result += " + " + helper[i].substring(1);
+                }
+            }
+            else {
+                if(helper[i].charAt(1) != achar) {
                     if(result.equals("")) {
                         result = helper[i].substring(1);
                         continue;
