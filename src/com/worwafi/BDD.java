@@ -63,21 +63,19 @@ public class BDD {
             for (Map.Entry<String, BDDNode> pair : nodeHashMap.get(orderOfNodes.length() + 1).entrySet()) {
                 if (pair.getValue().getRight() != null) {
                     if (pair.getValue().getRight().equals(actual)) {
-                        pair.getValue().setRight(actual);
                         root = actual;
                         break;
                     }
                 }
                 if (pair.getValue().getLeft() != null) {
                     if (pair.getValue().getLeft().equals(actual)) {
-                        pair.getValue().setLeft(actual);
                         root = actual;
                         break;
                     }
                 }
 
             }
-            System.out.println("I reduction on node carrying " + currentConfig);
+//            System.out.println("I reduction on node carrying " + currentConfig);
             iReductions++;
         }
         nodeHashMap.get(orderOfNodes.length()).put(currentConfig, root);
@@ -137,7 +135,7 @@ public class BDD {
                             result = new StringBuilder(helper[i]);
                             continue;
                         }
-                        if(!result.toString().contains(helper[i]))
+                        if(!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
                             result.append(" + ").append(helper[i]);
                     } else {
                         if (helper[i].length() == 2) {
@@ -148,16 +146,16 @@ public class BDD {
                             result = new StringBuilder(helper[i].substring(2));
                             continue;
                         }
-                        if(!result.toString().contains(helper[i].substring(2)))
+                        if(!result.toString().matches(".*\\b" + helper[i].substring(2) + "\\b.*"))
                             result.append(" + ").append(helper[i].substring(2));
                     }
                 } else {
                     if (helper[i].charAt(0) != achar) {
                         if (result.toString().equals("")) {
-                            result = new StringBuilder(helper[i].substring(1));
+                            result = new StringBuilder(helper[i]);
                             continue;
                         }
-                        if (!result.toString().contains(helper[i]))
+                        if (!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
                             result.append(" + ").append(helper[i]);
                     }
                 }
@@ -171,7 +169,7 @@ public class BDD {
                         result = new StringBuilder(helper[i]);
                         continue;
                     }
-                    if(!result.toString().contains(helper[i]))
+                    if(!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
                         result.append(" + ").append(helper[i]);
                 } else {
                     if (helper[i].length() == 1) {
@@ -182,16 +180,16 @@ public class BDD {
                         result = new StringBuilder(helper[i].substring(1));
                         continue;
                     }
-                    if (!result.toString().contains(helper[i].substring(1)))
+                    if (!result.toString().matches(".*\\b" + helper[i].substring(1) + "\\b.*"))
                         result.append(" + ").append(helper[i].substring(1));
                 }
             } else {
                 if (helper[i].charAt(1) != achar) {
                     if (result.toString().equals("")) {
-                        result = new StringBuilder(helper[i].substring(1));
+                        result = new StringBuilder(helper[i]);
                         continue;
                     }
-                    if (!result.toString().equals(helper[i]))
+                    if (!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
                         result.append(" + ").append(helper[i]);
                 }
             }
