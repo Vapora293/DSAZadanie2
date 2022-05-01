@@ -1,7 +1,10 @@
 package com.worwafi;
 
+import org.w3c.dom.Node;
+
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 public class BDD {
     private BDDNode root;
@@ -9,55 +12,79 @@ public class BDD {
     private final String orderOfNodes;
     private final BDDNode bright;
     private final BDDNode bfalse;
+    private int sReductions;
+    private int iReductions;
     private ArrayList<HashMap<String, BDDNode>> nodeHashMap;
+
     public BDD(String entry, String order) {
         this.entry = entry;
         this.orderOfNodes = order;
-        nodeHashMap = new ArrayList<>(orderOfNodes.length()+1);
-        for(int i = 0; i < orderOfNodes.length()+1; i++)
+        nodeHashMap = new ArrayList<>(orderOfNodes.length() + 1);
+        for (int i = 0; i < orderOfNodes.length() + 1; i++)
             nodeHashMap.add(i, new HashMap<>());
+        sReductions = 0;
+        iReductions = 0;
         bright = new BDDNode(1);
         bfalse = new BDDNode(0);
         root = new BDDNode(orderOfNodes.charAt(0));
         root = addRecursive(root, entry, orderOfNodes);
+        System.out.println("There were " + iReductions + " I-Reductions");
     }
 
-    private String[] getConvertedEntry() {
-        return entry.split(" + ");
-    }
+//    private String[] getConvertedEntry() {
+//        return entry.split(" + ");
+//    }
+//
+//    private void createTree() {
+////        for(int i = 0; i < convertedEntry.length; i++) {
+////            currentConfig = convertedEntry[i];
+//////            int actual = Integer.parseInt(String.valueOf(convertedEntry.charAt(i)));
+//////            currentConfig = getBinaryValues(i);
+////            addToBDD(convertedEntry, currentConfig);
+////        }
+//    }
 
-    private void createTree() {
-//        for(int i = 0; i < convertedEntry.length; i++) {
-//            currentConfig = convertedEntry[i];
-////            int actual = Integer.parseInt(String.valueOf(convertedEntry.charAt(i)));
-////            currentConfig = getBinaryValues(i);
-//            addToBDD(convertedEntry, currentConfig);
-//        }
-    }
-
-//    private void addToBDD(BDDNode root, String[] convertedEntry, String currentConfig) {
+    //    private void addToBDD(BDDNode root, String[] convertedEntry, String currentConfig) {
 //        if(root == null) {
 //            root = new BDDNode(orderOfNodes.charAt(0));
 //        }
 //        root = addRecursive(root, currentConfig, orderOfNodes);
 //    }
     private BDDNode addRecursive(BDDNode root, String currentConfig, String orderOfNodes) {
-        if(nodeHashMap.get(orderOfNodes.length()).put(currentConfig, root) != null) {
-            System.out.println("problem on " + currentConfig.length() + " level with " + orderOfNodes);
-        }
-        if(currentConfig.equals(".")) {
+        if (currentConfig.equals(".")) {
             root = bright;
             return root;
-        }
-        else if(currentConfig.equals("")) {
+        } else if (currentConfig.equals("")) {
             root = bfalse;
             return root;
         }
-        if(orderOfNodes.length() > 1) {
+        if(nodeHashMap.get(orderOfNodes.length()).get(currentConfig) != null) {
+            BDDNode actual = nodeHashMap.get(orderOfNodes.length()).get(currentConfig);
+            for (Map.Entry<String, BDDNode> pair : nodeHashMap.get(orderOfNodes.length() + 1).entrySet()) {
+                if (pair.getValue().getRight() != null) {
+                    if (pair.getValue().getRight().equals(actual)) {
+                        pair.getValue().setRight(actual);
+                        root = actual;
+                        break;
+                    }
+                }
+                if (pair.getValue().getLeft() != null) {
+                    if (pair.getValue().getLeft().equals(actual)) {
+                        pair.getValue().setLeft(actual);
+                        root = actual;
+                        break;
+                    }
+                }
+
+            }
+            System.out.println("I reduction on node carrying " + currentConfig);
+            iReductions++;
+        }
+        nodeHashMap.get(orderOfNodes.length()).put(currentConfig, root);
+        if (orderOfNodes.length() > 1) {
             root.setLeft(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), false), orderOfNodes.substring(1)));
             root.setRight(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), true), orderOfNodes.substring(1)));
-        }
-        else {
+        } else {
             root.setLeft(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), false), ""));
             root.setRight(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), true), ""));
         }
@@ -99,77 +126,77 @@ public class BDD {
 
     private String division(String currentConfig, char achar, boolean right) {
         String[] helper = currentConfig.split(" \\+ ");
-        String result = new String();
-        if(helper[0].equals(""))
+        StringBuilder result = new StringBuilder(new String());
+        if (helper[0].equals(""))
             return "";
-        if(!right) {
-            for(int i = 0; i < helper.length; i++) {
-                if(helper[i].charAt(0) == '!') {
-                    if(helper[i].charAt(1) != achar) {
-                        if(result.equals("")) {
-                            result = helper[i];
+        if (!right) {
+            for (int i = 0; i < helper.length; i++) {
+                if (helper[i].charAt(0) == '!') {
+                    if (helper[i].charAt(1) != achar) {
+                        if (result.toString().equals("")) {
+                            result = new StringBuilder(helper[i]);
                             continue;
                         }
-                        result += " + " + helper[i];
-                        continue;
-                    }
-                    else {
-                        if(helper[i].length() == 2) {
-                            result = ".";
+                        if(!result.toString().contains(helper[i]))
+                            result.append(" + ").append(helper[i]);
+                    } else {
+                        if (helper[i].length() == 2) {
+                            result = new StringBuilder(".");
                             break;
                         }
-                        if(result.equals("")) {
-                            result = helper[i].substring(2);
+                        if (result.toString().equals("")) {
+                            result = new StringBuilder(helper[i].substring(2));
                             continue;
                         }
-                        result += " + " + helper[i].substring(2);
+                        if(!result.toString().contains(helper[i].substring(2)))
+                            result.append(" + ").append(helper[i].substring(2));
                     }
-                }
-                else {
-                    if(helper[i].charAt(0) != achar) {
-                        if(result.equals("")) {
-                            result = helper[i].substring(1);
+                } else {
+                    if (helper[i].charAt(0) != achar) {
+                        if (result.toString().equals("")) {
+                            result = new StringBuilder(helper[i].substring(1));
                             continue;
                         }
-                        result += " + " + helper[i];
+                        if (!result.toString().contains(helper[i]))
+                            result.append(" + ").append(helper[i]);
                     }
                 }
             }
-            return result;
+            return result.toString();
         }
-        for(int i = 0; i < helper.length; i++) {
-            if(helper[i].charAt(0) != '!') {
-                if(helper[i].charAt(0) != achar) {
-                    if(result.equals("")) {
-                        result = helper[i];
+        for (int i = 0; i < helper.length; i++) {
+            if (helper[i].charAt(0) != '!') {
+                if (helper[i].charAt(0) != achar) {
+                    if (result.toString().equals("")) {
+                        result = new StringBuilder(helper[i]);
                         continue;
                     }
-                    result += " + " + helper[i];
-                    continue;
-                }
-                else {
-                    if(helper[i].length() == 1) {
-                        result = ".";
+                    if(!result.toString().contains(helper[i]))
+                        result.append(" + ").append(helper[i]);
+                } else {
+                    if (helper[i].length() == 1) {
+                        result = new StringBuilder(".");
                         break;
                     }
-                    if(result.equals("")) {
-                        result = helper[i].substring(1);
+                    if (result.toString().equals("")) {
+                        result = new StringBuilder(helper[i].substring(1));
                         continue;
                     }
-                    result += " + " + helper[i].substring(1);
+                    if (!result.toString().contains(helper[i].substring(1)))
+                        result.append(" + ").append(helper[i].substring(1));
                 }
-            }
-            else {
-                if(helper[i].charAt(1) != achar) {
-                    if(result.equals("")) {
-                        result = helper[i].substring(1);
+            } else {
+                if (helper[i].charAt(1) != achar) {
+                    if (result.toString().equals("")) {
+                        result = new StringBuilder(helper[i].substring(1));
                         continue;
                     }
-                    result += " + " + helper[i];
+                    if (!result.toString().equals(helper[i]))
+                        result.append(" + ").append(helper[i]);
                 }
             }
         }
-        return result;
+        return result.toString();
 //
 //        if(!right)
 //            return currentConfig.replaceAll("[^" + achar + "\\s]*" + achar + "\\s*","");

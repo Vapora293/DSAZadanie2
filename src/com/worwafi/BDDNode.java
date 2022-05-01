@@ -41,4 +41,8 @@ public class BDDNode {
     public void setValue(int value) {
         this.value = value;
     }
+
+    public char getaChar() {
+        return aChar;
+    }
 }

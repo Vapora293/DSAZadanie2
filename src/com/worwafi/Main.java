@@ -7,19 +7,20 @@ import java.util.Random;
 public class Main {
 
     public static void main(String[] args) {
-        int numberOfChars = 5;
-//        String dnf = dnfMake(numberOfChars, 20);
-        String dnf = "A!C + !C!E + DE + B!E + !A!E + !A!C + !AC!D + !A!C!E + AB + A!C!E + !A!B!D!E + C!DE + !BD + !C!DE";
-//        dnf = formatInput(dnf);
+        int numberOfChars = 13;
+        String dnf = dnfMake(numberOfChars, 130);
+//        String dnf = "!BC + A!C + AD + AC + B!D + !AB!E + !BE + A!D + !BDE + A!BC!E + !A!B!C!E + !A!C!D + A!CD + !CD + !BC + !A!B!C";
+//        String dnf = "A!C + !C!E + DE + B!E + !A!E + !A!C + !AC!D + !A!C!E + AB + A!C!E + !A!B!D!E + C!DE + !BD + !C!DE";
+        dnf = formatInput(dnf);
         BDD actual = new BDD(dnf, orderBuilder(numberOfChars));
-        System.out.println("hej");
+        System.out.println();
     }
 
     private static String dnfMake(int numberOfChars, int numberOfParts) {
         StringBuilder dnf = new StringBuilder();
         Random rand = new Random();
         for (int i = 0; i < numberOfParts; i++) {
-            int length = rand.nextInt(numberOfChars / 2, numberOfChars);
+            int length = rand.nextInt(numberOfChars - (numberOfChars / 3), numberOfChars);
             StringBuilder actual = new StringBuilder();
             for (int j = 0; j < length; j++) {
                 char letter = (char) rand.nextInt(65, 65 + numberOfChars);
