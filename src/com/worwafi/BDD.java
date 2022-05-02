@@ -58,7 +58,7 @@ public class BDD {
             root = bfalse;
             return root;
         }
-        if(nodeHashMap.get(orderOfNodes.length()).get(currentConfig) != null) {
+        if (nodeHashMap.get(orderOfNodes.length()).get(currentConfig) != null) {
             BDDNode actual = nodeHashMap.get(orderOfNodes.length()).get(currentConfig);
             for (Map.Entry<String, BDDNode> pair : nodeHashMap.get(orderOfNodes.length() + 1).entrySet()) {
                 if (pair.getValue().getRight() != null) {
@@ -73,18 +73,21 @@ public class BDD {
                         break;
                     }
                 }
-
             }
-//            System.out.println("I reduction on node carrying " + currentConfig);
+            System.out.println("I reduction on node carrying " + currentConfig);
             iReductions++;
         }
         nodeHashMap.get(orderOfNodes.length()).put(currentConfig, root);
-        if (orderOfNodes.length() > 1) {
-            root.setLeft(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), false), orderOfNodes.substring(1)));
-            root.setRight(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), true), orderOfNodes.substring(1)));
+        if (!sReduction(orderOfNodes.charAt(0), currentConfig)) {
+            if (orderOfNodes.length() > 1) {
+                root.setLeft(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), false), orderOfNodes.substring(1)));
+                root.setRight(addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), true), orderOfNodes.substring(1)));
+            } else {
+                root.setLeft(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), false), ""));
+                root.setRight(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), true), ""));
+            }
         } else {
-            root.setLeft(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), false), ""));
-            root.setRight(addRecursive(new BDDNode(' '), division(currentConfig, orderOfNodes.charAt(0), true), ""));
+                root = addRecursive(new BDDNode(orderOfNodes.charAt(1)), division(currentConfig, orderOfNodes.charAt(0), false), orderOfNodes.substring(1));
         }
 //        if (checkLetter(currentConfig, orderOfNodes)) {
 //            if(currentConfig.charAt(0) == '!') {
@@ -122,6 +125,10 @@ public class BDD {
         return root;
     }
 
+    private boolean sReduction(char charAt, String currentConfig) {
+        return division(currentConfig, charAt, false).equals(division(currentConfig, charAt, true));
+    }
+
     private String division(String currentConfig, char achar, boolean right) {
         String[] helper = currentConfig.split(" \\+ ");
         StringBuilder result = new StringBuilder(new String());
@@ -135,7 +142,7 @@ public class BDD {
                             result = new StringBuilder(helper[i]);
                             continue;
                         }
-                        if(!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
+                        if (!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
                             result.append(" + ").append(helper[i]);
                     } else {
                         if (helper[i].length() == 2) {
@@ -146,7 +153,7 @@ public class BDD {
                             result = new StringBuilder(helper[i].substring(2));
                             continue;
                         }
-                        if(!result.toString().matches(".*\\b" + helper[i].substring(2) + "\\b.*"))
+                        if (!result.toString().matches(".*\\b" + helper[i].substring(2) + "\\b.*"))
                             result.append(" + ").append(helper[i].substring(2));
                     }
                 } else {
@@ -169,7 +176,7 @@ public class BDD {
                         result = new StringBuilder(helper[i]);
                         continue;
                     }
-                    if(!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
+                    if (!result.toString().matches(".*\\b" + helper[i] + "\\b.*"))
                         result.append(" + ").append(helper[i]);
                 } else {
                     if (helper[i].length() == 1) {

@@ -9,11 +9,12 @@ public class Main {
     public static void main(String[] args) {
         int numberOfChars = 5;
 //        String dnf = dnfMake(numberOfChars, 20);
-        String dnf = "!C!E + ABE + !A!B + !AB!C + BDE + A!BCD + !BCD + !ABC!E + !ABCD + !CD!E + AB!C + B!CD + !ACD + !ABE + !A!B!CD + !A!BCE";
+        String dnf = "CDE + !ADE + ADE";
+//        String dnf = "!C!E + ABE + !A!B + !AB!C + BDE + A!BCD + !BCD + !ABC!E + !ABCD + !CD!E + AB!C + B!CD + !ACD + !ABE + !A!B!CD + !A!BCE";
 //        String dnf = "AB + BAD + DBA + ECAB + DBEC + BED + BC + EBC + DAE + EBD + CED + DECA + ADB + ACD + DC";
 //        String dnf = "!ADE + !BDE + !BC + A!C + AD + AC + B!D + !AB!E + !BE + A!D + A!BC!E + !A!B!C!E + !A!C!D + A!CD +  !BC + !A!B!C";
 //        String dnf = "A!C + !C!E + DE + B!E + !A!E + !A!C + !AC!D + !A!C!E + AB + A!C!E + !A!B!D!E + C!DE + !BD + !C!DE";
-        dnf = formatInput(dnf);
+//        dnf = formatInput(dnf);
         BDD actual = new BDD(dnf, orderBuilder(numberOfChars));
         System.out.println("yes");
     }
