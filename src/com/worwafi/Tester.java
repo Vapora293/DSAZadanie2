@@ -1,7 +1,6 @@
 package com.worwafi;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 
 public class Tester {
     String dnf;
@@ -20,17 +19,18 @@ public class Tester {
         for (String actual : entry) {
             ArrayList<StringBuilder> converted = getConvertedEntry(actual, orderOfNodes);
             for (StringBuilder now : converted) {
-                if(!(tree.traverseTree(tree.getRoot(), now.toString(), orderOfNodes, -1) == 1)) {
-                    System.out.println("error on " + dnf);
+                if (!(tree.traverseTree(tree.getRoot(), now.toString(), orderOfNodes, -1) == 1)) {
+                    System.out.println("error on " + now);
                 }
             }
         }
     }
+
     private ArrayList<StringBuilder> getConvertedEntry(String actual, String order) {
         ArrayList<StringBuilder> converted = new ArrayList<>();
         converted.add(new StringBuilder());
-        while(!order.equals("")) {
-            if(actual.equals("")) {
+        while (!order.equals("")) {
+            if (actual.equals("")) {
                 doubleAll(converted);
                 order = order.substring(1);
                 continue;
@@ -55,6 +55,7 @@ public class Tester {
         }
         return converted;
     }
+
     private void doubleAll(ArrayList<StringBuilder> converted) {
         int i = 0;
         try {
@@ -64,8 +65,7 @@ public class Tester {
                 converted.get(i + 1).append("1");
                 i += 2;
             }
-        }
-        catch (IndexOutOfBoundsException index) {
+        } catch (IndexOutOfBoundsException index) {
         }
     }
 

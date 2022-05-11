@@ -29,11 +29,11 @@ public class BDD {
         root = addRecursive(root, entry, orderOfNodes);
         numberOfNodes = 2;
         getNumberOfNodes();
-//        System.out.println("Total number of nodes is " + numberOfNodes);
-//        System.out.println("Total number without reductions could be " + (Math.pow(2, orderOfNodes.length()) + 2));
-//        System.out.println("Reduced by " + ((1 - (numberOfNodes / (Math.pow(2, orderOfNodes.length()) + 2))) * 100) + "%");
-//        System.out.println("There were " + iReductions + " I-Reductions");
-//        System.out.println("There were " + sReductions + " S-Reductions");
+        System.out.println("Total number of nodes is " + numberOfNodes);
+        System.out.println("Total number without reductions could be " + (Math.pow(2, orderOfNodes.length()) + 2));
+        System.out.println("Reduced by " + ((1 - (numberOfNodes / (Math.pow(2, orderOfNodes.length()) + 2))) * 100) + "%");
+        System.out.println("There were " + iReductions + " I-Reductions");
+        System.out.println("There were " + sReductions + " S-Reductions");
     }
 
     private void getNumberOfNodes() {
@@ -129,11 +129,9 @@ public class BDD {
                     try {
                         result = traverseTree(point.getLeft(), actual.substring(1), order.substring(1), result);
                     } catch (NullPointerException e) {
-                        System.out.println("error on " + point + " and " + actual);
                     }
                     else {
-                        result = traverseTree(point.getLeft(), actual.substring(1), order.substring(1), result);
-                        result = traverseTree(point.getRight(), actual.substring(1), order.substring(1), result);
+                        result = traverseTree(point, actual.substring(1), order.substring(1), result);
                     }
             }
             else {
@@ -141,11 +139,9 @@ public class BDD {
                     try {
                         result = traverseTree(point.getRight(), actual.substring(1), order.substring(1), result);
                     } catch (NullPointerException e) {
-                        System.out.println("error on " + point + " and " + actual);
                     }
                 else {
-                    result = traverseTree(point.getLeft(), actual.substring(1), order.substring(1), result);
-                    result = traverseTree(point.getRight(), actual.substring(1), order.substring(1), result);
+                    result = traverseTree(point, actual.substring(1), order.substring(1), result);
                 }
             }
         }
